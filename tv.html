@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Overdevest TV</title>
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Saira+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    html, body { margin: 0; height: 100%; background: #0B2E4F; overflow: hidden; cursor: none; }
+    #stage { width: 1920px; height: 1080px; position: absolute; left: 0; top: 0; transform-origin: 0 0; box-sizing: border-box;
+      padding: 44px 56px 0; background: #0B2E4F; color: #fff; font-family: Barlow, sans-serif; display: flex; flex-direction: column; gap: 30px; overflow: hidden; }
+    .eyebrow { font-size: 22px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #9EE3EC; }
+    .display { font-family: 'Saira Condensed', sans-serif; }
+    .ring { position: absolute; border-style: solid; box-sizing: border-box; pointer-events: none; }
+    .card { background: #123A60; border-radius: 32px; padding: 28px 30px; position: relative; overflow: hidden; }
+    .card > *:not(.ring) { position: relative; }
+    header { display: flex; justify-content: space-between; align-items: center; height: 116px; }
+    main { flex: 1; display: grid; grid-template-columns: 440px minmax(0, 1fr) 560px; gap: 30px; min-height: 0; }
+    .col { display: flex; flex-direction: column; gap: 24px; min-height: 0; }
+    .room { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.12); }
+    .room:last-child { border-bottom: 0; }
+    .dot { width: 16px; height: 16px; border-radius: 8px; flex-shrink: 0; }
+    .spot { padding: 0; display: flex; flex-direction: column; }
+    .slide { flex: 1; position: relative; overflow: hidden; padding: 56px; display: flex; flex-direction: column; justify-content: flex-end; animation: fade .8s ease; }
+    .slide .big { font-family: 'Saira Condensed', sans-serif; font-weight: 800; font-size: 108px; line-height: .95; margin-top: 14px; }
+    .slide .sub { font-size: 32px; font-weight: 600; margin-top: 20px; }
+    @keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+    .dots { height: 60px; background: #0B2E4F; display: flex; align-items: center; gap: 16px; padding: 0 32px; }
+    .dots div { height: 6px; border-radius: 3px; overflow: hidden; background: rgba(255,255,255,.25); flex: 1; }
+    .dots div.on { flex: 3; }
+    .dots div.on::after { content: ''; display: block; height: 100%; background: #E5482D; animation: grow 12s linear forwards; }
+    @keyframes grow { from { width: 0 } to { width: 100% } }
+    .rank { display: flex; align-items: center; gap: 18px; }
+    .badge { width: 42px; height: 42px; border-radius: 21px; display: flex; align-items: center; justify-content: center; font: 700 22px Barlow; flex-shrink: 0; background: rgba(255,255,255,.12); }
+    footer { height: 84px; margin: 0 -56px; background: #fff; color: #0B2E4F; display: flex; align-items: center; overflow: hidden; }
+    .ticker-wrap { flex: 1; overflow: hidden; }
+    .ticker { display: inline-flex; gap: 80px; white-space: nowrap; padding-left: 40px; font-size: 30px; font-weight: 600; animation: tick var(--dur, 80s) linear infinite; }
+    @keyframes tick { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+    .muted { color: #C9D7E4; }
+    .placeholder { background: #DCE3EA; color: #4A5A6B; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 600; }
+    #error { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; text-align: center; font-size: 40px; padding: 100px; }
+  </style>
+</head>
+<body>
+  <div id="stage">
+    <header>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <img src="img/logo-white.png" alt="Overdevest" style="height:44px;width:273px;display:block">
+        <div style="font-size:30px;font-weight:500" class="muted"><span id="greet">Goedemorgen</span>, collega's</div>
+      </div>
+      <div style="text-align:right">
+        <div class="display" id="clock" style="font-weight:700;font-size:104px;line-height:.9;font-variant-numeric:tabular-nums">--:--</div>
+        <div id="date" class="muted" style="font-size:30px;font-weight:600;margin-top:6px"></div>
+      </div>
+    </header>
+
+    <main>
+      <div class="col">
+        <section class="card" style="background:#fff;color:#0B2E4F">
+          <span class="ring" style="right:-40px;top:-40px;width:120px;height:130px;border-width:18px;border-color:#E5482D;border-radius:32px"></span>
+          <div class="eyebrow" style="color:#0B7285">Lunchtafel vandaag</div>
+          <div id="tafel" class="display" style="font-weight:700;font-size:48px;line-height:1.05;margin-top:8px">—</div>
+          <div id="lunchinfo" style="font-size:24px;color:#4A5A6B;margin-top:4px"></div>
+        </section>
+        <section class="card">
+          <div class="eyebrow">Ruimtes</div>
+          <ul id="rooms" style="list-style:none;margin:8px 0 0;padding:0"></ul>
+        </section>
+        <section class="card" style="flex:1">
+          <div class="eyebrow">Vandaag</div>
+          <ul id="agenda" style="list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:14px"></ul>
+        </section>
+      </div>
+
+      <section class="card spot">
+        <div id="slide" style="flex:1;display:flex"></div>
+        <div class="dots" id="dots"></div>
+      </section>
+
+      <div class="col">
+        <section class="card">
+          <div class="eyebrow">Werknemer van de week</div>
+          <div id="winner"></div>
+          <ol id="ranking" style="list-style:none;margin:10px 0 0;padding:0 18px;display:flex;flex-direction:column;gap:10px"></ol>
+        </section>
+        <section class="card" id="socialcard" style="flex:1;background:#fff;color:#0B2E4F;display:flex;flex-direction:column;min-height:0"></section>
+      </div>
+    </main>
+
+    <footer>
+      <div style="height:100%;background:#C93A1F;color:#fff;display:flex;align-items:center;padding:0 32px;font-size:26px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0;position:relative;z-index:1">NOS Nieuws</div>
+      <div class="ticker-wrap"><div class="ticker" id="ticker"><span>Nieuws laden…</span></div></div>
+      <div style="height:100%;background:#0B2E4F;color:#C9D7E4;display:flex;align-items:center;padding:0 28px;font-size:20px;flex-shrink:0;position:relative;z-index:1">Bron: nos.nl</div>
+    </footer>
+    <div id="error"></div>
+  </div>
+  <script type="module" src="js/tv.js"></script>
+</body>
+</html>
